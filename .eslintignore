@@ -1,0 +1,4 @@
+coverage
+app/public/*
+node_modules/
+test/
