@@ -1,6 +1,7 @@
 import Koa from 'koa';
 import path from 'path';
-import render from 'koa-ejs'
+import render from 'koa-ejs';
+import serve from 'koa-static';
 import appRoutes from './router';
 
 const port = process.env.HTTP_PORT || 3001;
@@ -9,11 +10,13 @@ const app = new Koa();
 
 render(app, {
   root: path.join(__dirname, 'view'),
-  layout: 'layout',
-  viewExt: 'ejs',
+  layout: 'layout/index',
+  viewExt: 'html',
   cache: false,
   debug: true
 })
+
+app.use(serve(path.resolve(__dirname, './public')));
 
 appRoutes(app);
 

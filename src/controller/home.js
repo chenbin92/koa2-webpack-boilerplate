@@ -1,6 +1,7 @@
+console.log('home page...')
 const home = async (ctx) => {
-  await ctx.render('/page/home', {
-    title: '投研产品'
+  await ctx.render('/home', {
+    title: 'Home'
   })
 }
 
