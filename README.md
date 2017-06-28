@@ -10,3 +10,18 @@
   3. scripts：
   4. stylesheets：
   5. link：
+
+
+## 任务
+  1. 区分 prod， dev， test
+  2. extract css
+  3. assets proxy
+  4. hot reload
+  5. Eslint
+  6. pre-commit
+
+## 问题
+  改动文件编译后相应的文件会递增
+
+## 参考
+  * http://www.cnblogs.com/lvdabao/p/5944420.html

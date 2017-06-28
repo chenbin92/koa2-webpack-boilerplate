@@ -4,34 +4,51 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm-run-all --parallel dev watch:assets",
-    "dev": "node index.js",
-    "watch:assets": "webpack --watch --colors --display-error-details --config build/webpack.config.js"
+    "start:server": "node index.js",
+    "start:dev": "export NODE_ENV=development && npm-run-all --parallel clean lint:watch start:server watch:assets",
+    "start:prod": "npm run start:server",
+    "build:prod": "export NODE_ENV=production && npm run clean && npm run lint && webpack --colors --display-error-details --config build/webpack.config.js",
+    "watch:assets": "webpack --watch --colors --display-error-details --config build/webpack.config.js",
+    "lint": "esw .",
+    "lint:watch": "npm run lint -- --watch",
+    "clean": "rimraf src/public/*"
   },
+  "pre-commit": ["lint"],
   "author": "chenbin92",
   "license": "ISC",
   "dependencies": {
+    "jquery": "^3.2.1",
     "koa": "^2.3.0",
-    "koa-router": "^7.2.1"
+    "koa-router": "^7.2.1",
+    "lodash": "^4.17.4"
   },
   "devDependencies": {
+    "assets-webpack-plugin": "^3.5.1",
     "babel-loader": "^7.1.0",
     "babel-preset-env": "^1.5.2",
     "babel-register": "^6.24.1",
     "copy-webpack-plugin": "^4.0.1",
     "css-loader": "^0.28.4",
-    "eslint": "^4.0.0",
+    "eslint": "^4.1.1",
     "eslint-config-egg": "^4.2.1",
+    "eslint-watch": "^3.1.2",
+    "eventsource-polyfill": "^0.9.6",
     "extract-text-webpack-plugin": "^2.1.2",
     "html-loader": "^0.4.5",
     "html-webpack-plugin": "^2.28.0",
     "koa-ejs": "^4.0.0",
     "koa-static": "^3.0.0",
+    "koa-webpack": "^0.5.1",
+    "koa-webpack-hot-middleware": "^1.0.3",
+    "koa-webpack-middleware": "^1.0.5",
     "node-sass": "^4.5.3",
     "npm-run-all": "^4.0.2",
+    "pre-commit": "^1.2.2",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.18.2",
     "url-loader": "^0.5.9",
-    "webpack": "^3.0.0"
+    "webpack": "^3.0.0",
+    "webpack-dev-middleware": "^1.11.0",
+    "webpack-hot-middleware": "^2.18.0"
   }
 }

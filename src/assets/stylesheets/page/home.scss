@@ -1,4 +1,4 @@
-.home {
+.home, .about {
   text-align: center;
 
   h2 {
@@ -7,7 +7,9 @@
   }
 
   .logo {
-    max-width: 500px;
+    width: 300px;
+    display: block;
+    margin: 0 auto;
   }
 
 }

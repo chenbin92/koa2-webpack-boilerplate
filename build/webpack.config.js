@@ -3,10 +3,27 @@ const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const AssetsWebpackPlugin = require('assets-webpack-plugin');
 
 const ROOT_PATH = path.resolve(__dirname, '..');
 const OUTPUT_PATH = path.join(ROOT_PATH, 'src/public');
 const IMAGES_PATH = path.join(ROOT_PATH, 'src/assets/images');
+
+/**
+ * =======================================================
+ *  environments
+ * =======================================================
+ */
+const __DEV__ = process.env.NODE_ENV === 'development';
+const __PROD__ = process.env.NODE_ENV === 'production';
+// const __TEST__ = process.env.NODE_ENV === 'test'
+console.log('process.env.NODE_ENV =', process.env.NODE_ENV);
+
+/**
+ * =======================================================
+ *  plugins
+ * =======================================================
+ */
 
 // https://stackoverflow.com/questions/27639005/how-to-copy-static-files-to-build-directory-with-webpack
 const copyImages = new CopyWebpackPlugin([
@@ -22,27 +39,68 @@ const extractSass = new ExtractTextPlugin({
 const exposeGlobal = new webpack.ProvidePlugin({
   $: 'jquery',
   jQuery: 'jquery',
-  _: 'lodash'
+  _: 'lodash',
 });
 
+// TODO: 考虑多页面的情况
 const generateHtml = new HtmlWebpackPlugin({
   inject: 'head',
   template: path.join(ROOT_PATH, 'src/view/layout/index_template.html'),
   filename: path.join(ROOT_PATH, 'src/view/layout/index.html'),
 });
 
+// TODO: hot reload
+// const hotModuleReplacementPlugin = new webpack.HotModuleReplacementPlugin();
+// const noEmitOnErrorsPlugin = new webpack.NoEmitOnErrorsPlugin();
+
+const occurrenceOrderPlugin = new webpack.optimize.OccurrenceOrderPlugin();
+const uglifyJsPlugin = new webpack.optimize.UglifyJsPlugin({
+  compress: {
+    unused: true,
+    dead_code: true,
+    warnings: false,
+  },
+});
+
+const definePlugin = new webpack.DefinePlugin({
+  'process.env.NODE_ENV': JSON.stringify('process.env.NODE_ENV'),
+});
+
+const commonsChunkPlugin = new webpack.optimize.CommonsChunkPlugin({
+  name: [ 'common', 'vendor', 'runtime' ],
+});
+
+const assetsWebpackPlugin = new AssetsWebpackPlugin({
+  filename: 'assets.json',
+  path: path.join(ROOT_PATH, 'src', 'config'),
+  prettyPrint: true,
+  processOutput: function(assets) {
+    return 'window.staticMap = ' + JSON.stringify(assets);
+  },
+});
+
+
+/**
+ * =======================================================
+ *  config
+ * =======================================================
+ */
+
+
 const config = {
   context: path.join(ROOT_PATH, 'src/assets/javascripts'),
 
-  entry: './application.js',
+  entry: {
+    vendor: './vendor.js',
+    common: './commons/index.js',
+    application : './application.js',
+  },
 
   output: {
     path: OUTPUT_PATH,
     publicPath: './',
-    filename: '[name].bundle.js',
+    filename: '[name].[chunkhash].js',
   },
-
-  devtool: 'cheap-module-source-map',
 
   module: {
     rules: [
@@ -64,7 +122,7 @@ const config = {
       },
       {
         test: /\.html$/,
-        loader: 'html-loader'
+        loader: 'html-loader',
       },
       {
         test: /\.woff(\?.*)?$/,
@@ -92,7 +150,14 @@ const config = {
       },
       {
         test: /\.(png|jpg)$/,
-        loader: 'url-loader?limit=8192',
+        loader: 'url-loader',
+        options: {
+          limit: 8192,
+          name: '[name],[ext]',
+          // publicPath: './t',
+          // outputPath: 'images/'
+          // prefix: '/test', // not workong
+        },
       },
     ],
   },
@@ -106,7 +171,45 @@ const config = {
     extractSass,
     generateHtml,
     exposeGlobal,
+    definePlugin,
+    commonsChunkPlugin,
+    assetsWebpackPlugin,
   ],
+
+  // 设置性能预设值(https://webpack.js.org/configuration/performance)
+  // object { assetFilter?, hints?, maxEntrypointSize?, maxAssetSize? }
+  performance: __PROD__ && {
+    maxAssetSize: 100,
+    maxEntrypointSize: 300,
+    hints: 'warning',
+  },
 };
+
+/**
+ * =======================================================
+ * TODO: __DEV__
+ * =======================================================
+ */
+if (__DEV__) {
+  config.devtool = 'cheap-module-eval-source-map';
+  console.log('Enabling plugins for live development (HMR, NoErrors).');
+  // noEmitOnErrorsPlugin,
+  // hotModuleReplacementPlugin
+}
+
+/**
+ * =======================================================
+ *  __PROD__
+ * =======================================================
+ */
+
+if (__PROD__) {
+  config.devtool = 'source-map';
+  console.log('Enabling plugins for production (OccurenceOrder, UglifyJS).');
+  config.plugins.push(
+    uglifyJsPlugin,
+    occurrenceOrderPlugin
+  );
+}
 
 module.exports = config;

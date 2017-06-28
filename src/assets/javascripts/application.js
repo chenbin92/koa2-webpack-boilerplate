@@ -1,2 +1,8 @@
+// import stylesheets
 import '../stylesheets/application.scss';
-console.log('application.js...');
+
+// import page scripts
+import './home';
+import './about';
+
+console.log('loaded application.js...');
