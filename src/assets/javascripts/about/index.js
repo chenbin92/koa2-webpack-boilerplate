@@ -5,7 +5,7 @@
     }
 
     About.prototype.init = function() {
-      console.log('init about Page');
+      console.log('init about Page...');
     };
 
     return About;

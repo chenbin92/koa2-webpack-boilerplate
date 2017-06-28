@@ -3,5 +3,10 @@
   "parserOptions": {
     "ecmaVersion": 6,
     "sourceType": "module"
+  },
+  "rules": {
+    "no-unused-vars": 2,
+    "no-console": 1,
+    "object-shorthand": 1
   }
 }

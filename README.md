@@ -25,3 +25,15 @@
 
 ## 参考
   * http://www.cnblogs.com/lvdabao/p/5944420.html
+
+  hot reload:
+  * https://github.com/glenjamin/webpack-hot-middleware
+  * https://github.com/webpack/webpack-dev-middleware
+  * http://nekomiao.me/2017/05/24/koa2-react-hotmidllware/
+  * https://github.com/leecade/koa-webpack-middleware
+  * https://gmiam.com/post/webpack-hot-replacement.html
+  * https://github.com/leecade/koa-webpack-middleware
+  * http://hubcarl.github.io/blog/2017/04/15/egg-webpack/
+
+  webpack-bundle-analyzer
+  * https://zhuanlan.zhihu.com/p/26710831

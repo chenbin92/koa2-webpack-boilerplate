@@ -5,35 +5,70 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const AssetsWebpackPlugin = require('assets-webpack-plugin');
 const OpenBrowserPlugin = require('open-browser-webpack-plugin');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const project = require('./project.config');
 
 const ROOT_PATH = path.resolve(__dirname, '..');
 const OUTPUT_PATH = path.join(ROOT_PATH, 'src/public');
 const IMAGES_PATH = path.join(ROOT_PATH, 'src/assets/images');
 
-/**
- * =======================================================
- *  environments
- * =======================================================
- */
-const __DEV__ = process.env.NODE_ENV === 'development';
-const __PROD__ = process.env.NODE_ENV === 'production';
-// const __TEST__ = process.env.NODE_ENV === 'test'
+const __DEV__ = project.globals.__DEV__;
+const __PROD__ = project.globals.__PROD__;
+// const __TEST__ = project.globals.__TEST__;
+
 console.log('process.env.NODE_ENV =', process.env.NODE_ENV);
 
-/**
- * =======================================================
- *  plugins
- * =======================================================
- */
+const webpackConfig = {
+  // name: 'server',
+  // target: 'node',
+  context: path.join(ROOT_PATH, 'src/assets/javascripts'),
+  resolve: {
+    // modules: [ project.paths.src(), 'node_modules' ],
+    extensions: [ '.js', '.json' ],
+  },
 
-// https://stackoverflow.com/questions/27639005/how-to-copy-static-files-to-build-directory-with-webpack
+  module: {},
+};
+
+// ------------------------------------
+// Entry Points
+// ------------------------------------
+webpackConfig.entry = {
+  vendor: './vendor.js',
+  common: './commons/index.js',
+  application: [ './application.js', 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=2000&reload=true' ],
+};
+
+// ------------------------------------
+// Bundle Output
+// ------------------------------------
+// webpackConfig.output = {
+//   filename: `[name].[${project.compiler_hash_type}].js`,
+//   path: OUTPUT_PATH,
+//   // path: project.paths.public(),
+//   publicPath: project[project.env].compiler_public_path,
+// };
+webpackConfig.output = {
+  path: OUTPUT_PATH,
+  publicPath: './',
+  filename: '[name].[hash].js',
+};
+
+// ------------------------------------
+// Externals
+// ------------------------------------
+// webpackConfig.externals = [];
+
+// ------------------------------------
+// Plugins List
+// ------------------------------------
 const copyImages = new CopyWebpackPlugin([
   { from: IMAGES_PATH, to: `${OUTPUT_PATH}/images` },
 ]);
 
 const extractSass = new ExtractTextPlugin({
   filename: 'application.css', // '[name].[contenthash].css'
-  disable: process.env.NODE_ENV === 'development',
+  disable: __DEV__,
 });
 
 // fix legacy jQuery plugins which depend on globals
@@ -43,16 +78,11 @@ const exposeGlobal = new webpack.ProvidePlugin({
   _: 'lodash',
 });
 
-// TODO: 考虑多页面的情况
 const generateHtml = new HtmlWebpackPlugin({
   inject: 'head',
   template: path.join(ROOT_PATH, 'src/view/layout/index_template.html'),
   filename: path.join(ROOT_PATH, 'src/view/layout/index.html'),
 });
-
-// TODO: hot reload
-// const hotModuleReplacementPlugin = new webpack.HotModuleReplacementPlugin();
-// const noEmitOnErrorsPlugin = new webpack.NoEmitOnErrorsPlugin();
 
 const occurrenceOrderPlugin = new webpack.optimize.OccurrenceOrderPlugin();
 const uglifyJsPlugin = new webpack.optimize.UglifyJsPlugin({
@@ -63,9 +93,7 @@ const uglifyJsPlugin = new webpack.optimize.UglifyJsPlugin({
   },
 });
 
-const definePlugin = new webpack.DefinePlugin({
-  'process.env.NODE_ENV': JSON.stringify('process.env.NODE_ENV'),
-});
+const definePlugin = new webpack.DefinePlugin(project.globals);
 
 const commonsChunkPlugin = new webpack.optimize.CommonsChunkPlugin({
   name: [ 'common', 'vendor', 'runtime' ],
@@ -80,141 +108,109 @@ const assetsWebpackPlugin = new AssetsWebpackPlugin({
   },
 });
 
+// ------------------------------------
+// Apply Plugins
+// ------------------------------------
+webpackConfig.plugins = [
+  copyImages,
+  extractSass,
+  generateHtml,
+  exposeGlobal,
+  definePlugin,
+  commonsChunkPlugin,
+  assetsWebpackPlugin,
+];
 
-/**
- * =======================================================
- *  config
- * =======================================================
- */
-
-
-const config = {
-  context: path.join(ROOT_PATH, 'src/assets/javascripts'),
-
-  entry: {
-    vendor: './vendor.js',
-    common: './commons/index.js',
-    application : [ './application.js', 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=2000&reload=true' ]
-  },
-
-  output: {
-    path: OUTPUT_PATH,
-    publicPath: './',
-    filename: '[name].[hash].js',
-  },
-
-  module: {
-    rules: [
-      {
-        test: /\.scss$/,
-        exclude: /node_modules/,
-        use: extractSass.extract({
-          use: [
-            { loader: 'css-loader' },
-            { loader: 'sass-loader' },
-          ],
-          fallback: 'style-loader',
-        }),
-      },
-      {
-        test: /\.js$/,
-        exclude: /(node_modules|vendor\/assets)/,
-        loader: 'babel-loader',
-      },
-      {
-        test: /\.html$/,
-        loader: 'html-loader',
-      },
-      {
-        test: /\.woff(\?.*)?$/,
-        loader: 'url-loader?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=application/font-woff',
-      },
-      {
-        test: /\.woff2(\?.*)?$/,
-        loader: 'url-loader?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=application/font-woff2',
-      },
-      {
-        test: /\.otf(\?.*)?$/,
-        loader: 'file-loader?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=font/opentype',
-      },
-      {
-        test: /\.ttf(\?.*)?$/,
-        loader: 'url-loader?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=application/octet-stream',
-      },
-      {
-        test: /\.eot(\?.*)?$/,
-        loader: 'file-loader?prefix=fonts/&name=[path][name].[ext]',
-      },
-      {
-        test: /\.svg(\?.*)?$/,
-        loader: 'url-loader?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=image/svg+xml',
-      },
-      {
-        test: /\.(png|jpg)$/,
-        loader: 'url-loader',
-        options: {
-          limit: 8192,
-          name: '[name],[ext]',
-          // publicPath: './t',
-          // outputPath: 'images/'
-          // prefix: '/test', // not workong
-        },
-      },
-    ],
-  },
-
-  resolve: {
-    extensions: [ '.scss', '.js' ],
-  },
-
-  plugins: [
-    copyImages,
-    extractSass,
-    generateHtml,
-    exposeGlobal,
-    definePlugin,
-    commonsChunkPlugin,
-    assetsWebpackPlugin,
-  ],
-
-  // 设置性能预设值(https://webpack.js.org/configuration/performance)
-  // object { assetFilter?, hints?, maxEntrypointSize?, maxAssetSize? }
-  performance: __PROD__ && {
-    maxAssetSize: 100,
-    maxEntrypointSize: 300,
-    hints: 'warning',
-  },
-};
-
-/**
- * =======================================================
- * TODO: __DEV__
- * =======================================================
- */
+// ------------------------------------
+// Development Mode
+// ------------------------------------
 if (__DEV__) {
-  config.devtool = 'cheap-module-eval-source-map';
+  webpackConfig.devtool = project.development.compiler_devtool;
   console.log('Enabling plugins for live development (HMR, NoErrors).');
-  config.plugins.push(
+  webpackConfig.plugins.push(
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
-    new OpenBrowserPlugin({ url: 'http://localhost:3000' })
+    new OpenBrowserPlugin({ url: project.development.compiler_public_path })
   );
 }
 
-/**
- * =======================================================
- *  __PROD__
- * =======================================================
- */
-
+// ------------------------------------
+// Production Mode
+// ------------------------------------
 if (__PROD__) {
-  config.devtool = 'source-map';
+  webpackConfig.devtool = project.production.compiler_devtool;
   console.log('Enabling plugins for production (OccurenceOrder, UglifyJS).');
-  config.plugins.push(
+  webpackConfig.plugins.push(
     uglifyJsPlugin,
-    occurrenceOrderPlugin
+    occurrenceOrderPlugin,
+    new BundleAnalyzerPlugin()
   );
+
+  // https://webpack.js.org/configuration/performance
+  webpackConfig.performance = {
+    maxAssetSize: 100,
+    maxEntrypointSize: 300,
+    hints: 'warning',
+  };
 }
 
-module.exports = config;
+// ------------------------------------
+// Loaders
+// ------------------------------------
+webpackConfig.module.rules = [
+  {
+    test: /\.scss$/,
+    exclude: /node_modules/,
+    use: extractSass.extract({
+      use: [
+        { loader: 'css-loader' },
+        { loader: 'sass-loader' },
+      ],
+      fallback: 'style-loader',
+    }),
+  },
+  {
+    test: /\.js$/,
+    exclude: /(node_modules|vendor\/assets)/,
+    loader: 'babel-loader',
+  },
+  {
+    test: /\.html$/,
+    loader: 'html-loader',
+  },
+  {
+    test: /\.woff(\?.*)?$/,
+    loader: 'url-loader?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=application/font-woff',
+  },
+  {
+    test: /\.woff2(\?.*)?$/,
+    loader: 'url-loader?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=application/font-woff2',
+  },
+  {
+    test: /\.otf(\?.*)?$/,
+    loader: 'file-loader?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=font/opentype',
+  },
+  {
+    test: /\.ttf(\?.*)?$/,
+    loader: 'url-loader?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=application/octet-stream',
+  },
+  {
+    test: /\.eot(\?.*)?$/,
+    loader: 'file-loader?prefix=fonts/&name=[path][name].[ext]',
+  },
+  {
+    test: /\.svg(\?.*)?$/,
+    loader: 'url-loader?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=image/svg+xml',
+  },
+  {
+    test: /\.(png|jpg)$/,
+    loader: 'url-loader',
+    options: {
+      limit: 8192,
+      name: '[name],[ext]',
+    },
+  },
+];
+
+module.exports = webpackConfig;
