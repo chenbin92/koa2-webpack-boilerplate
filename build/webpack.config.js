@@ -4,6 +4,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const AssetsWebpackPlugin = require('assets-webpack-plugin');
+const OpenBrowserPlugin = require('open-browser-webpack-plugin');
 
 const ROOT_PATH = path.resolve(__dirname, '..');
 const OUTPUT_PATH = path.join(ROOT_PATH, 'src/public');
@@ -196,7 +197,8 @@ if (__DEV__) {
   config.plugins.push(
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin()
+    new webpack.NoEmitOnErrorsPlugin(),
+    new OpenBrowserPlugin({ url: 'http://localhost:3000' })
   );
 }
 
