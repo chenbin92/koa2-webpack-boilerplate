@@ -93,13 +93,13 @@ const config = {
   entry: {
     vendor: './vendor.js',
     common: './commons/index.js',
-    application : './application.js',
+    application : [ './application.js', 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=2000&reload=true' ]
   },
 
   output: {
     path: OUTPUT_PATH,
     publicPath: './',
-    filename: '[name].[chunkhash].js',
+    filename: '[name].[hash].js',
   },
 
   module: {
@@ -193,8 +193,11 @@ const config = {
 if (__DEV__) {
   config.devtool = 'cheap-module-eval-source-map';
   console.log('Enabling plugins for live development (HMR, NoErrors).');
-  // noEmitOnErrorsPlugin,
-  // hotModuleReplacementPlugin
+  config.plugins.push(
+    new webpack.optimize.OccurrenceOrderPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoEmitOnErrorsPlugin()
+  );
 }
 
 /**

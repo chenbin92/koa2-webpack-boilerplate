@@ -3,7 +3,7 @@ import path from 'path';
 import render from 'koa-ejs';
 import serve from 'koa-static';
 import webpack from 'webpack';
-// import { devMiddleware, hotMiddleware } from 'koa-webpack-middleware';
+import { devMiddleware, hotMiddleware } from 'koa-webpack-middleware';
 import webpackConfig from '../build/webpack.config';
 import appRoutes from './router';
 
@@ -18,8 +18,24 @@ render(app, {
   layout: 'layout/index',
   viewExt: 'html',
   cache: false,
-  debug: true
-})
+  debug: true,
+});
+
+const wdm = devMiddleware(compiler, {
+  watchOptions: {
+    aggregateTimeout: 300,
+    poll: true,
+  },
+  reload: true,
+  publicPath: './', // config.output.publicPath
+  stats: {
+    colors: true,
+  },
+});
+
+app.use(wdm);
+app.use(hotMiddleware(compiler));
+
 
 // app.use(function* (next) {
 //   yield require("webpack-hot-middleware")(compiler).bind(null, this.req, this.res);
@@ -33,4 +49,4 @@ appRoutes(app);
 
 app.listen(port, ip, () => {
   console.log(`app started at http://${ip ? ip : 'localhost'}:${port}`);
-})
+});
