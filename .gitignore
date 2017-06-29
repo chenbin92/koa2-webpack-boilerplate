@@ -4,3 +4,5 @@ coverage
 npm-debug.log
 .vscode
 /src/public
+/src/view/layout/index.html
+/src/config/assets.json
