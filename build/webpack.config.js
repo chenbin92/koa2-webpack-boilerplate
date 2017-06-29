@@ -85,7 +85,7 @@ const commonsChunkPlugin = new webpack.optimize.CommonsChunkPlugin({
 });
 
 const assetsWebpackPlugin = new AssetsWebpackPlugin({
-  filename: 'assets.json',
+  filename: 'assets_map.json',
   path: project.paths.src('config'),
   prettyPrint: true,
   processOutput: function(assets) {
