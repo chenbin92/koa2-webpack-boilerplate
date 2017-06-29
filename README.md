@@ -1,39 +1,64 @@
-## 问题：
+# koa2 Boilerplate
 
-一个域名下面部署多个项目，如何动态的给每个项目添加唯一标识，然后通过nginx 配置代理到IP ＋Port 实现一个域名下部署
-    多个项目？
+A simple koa2 boilerplate based on webpack3
 
-## 需求：
+## Features
+This is a koa2 starter boilerplate app I've put together using the following technologies:
+✓ [koa v2](https://github.com/koajs/koa)
+✓ [webpack(v3)](https://github.com/webpack/webpack)
+✓ [ES2015+](http://babeljs.io/docs/learn-es2015/)
+✓ [Babel](http://babeljs.io/)
+✓ [SCSS](http://sass-lang.com/)
+✓ [Hot reload](https://github.com/leecade/koa-webpack-middleware)
+✓ [Eslint](https://github.com/eslint/eslint)
+✓ [pre-commit](https://github.com/observing/pre-commit)
 
-  1. router：路由添加prefix
-  2. public：静态资源添加prefix
-  3. scripts：
-  4. stylesheets：
-  5. link：
+---
+
+## Usage
+
+**Step 1**. Make sure that you have [Node.js](https://nodejs.org/) v6 or newer and
+[npm](https://github.com/npm/npm) installed on your development machine.
+
+**Step 2**. Clone this repository
+
+```shell
+$ git clone 
+$ cd MyApp
+$ npm install       # Install project dependencies listed in package.json
+```
 
 
-## 任务
-  1. 区分 prod， dev， test
-  2. extract css
-  3. assets proxy
-  4. hot reload
-  5. Eslint
-  6. pre-commit
+**Step 3**. Compile and launch your app by running:
 
-## 问题
-  改动文件编译后相应的文件会递增
+```shell
+$ npm run start:dev  # Compiles the app and opens it in a browser with "hot reload"
+```
 
-## 参考
-  * http://www.cnblogs.com/lvdabao/p/5944420.html
+Now the app should be running at [http://0.0.0.0:3000/](http://0.0.0.0:3000/)
 
-  hot reload:
-  * https://github.com/glenjamin/webpack-hot-middleware
-  * https://github.com/webpack/webpack-dev-middleware
-  * http://nekomiao.me/2017/05/24/koa2-react-hotmidllware/
-  * https://github.com/leecade/koa-webpack-middleware
-  * https://gmiam.com/post/webpack-hot-replacement.html
-  * https://github.com/leecade/koa-webpack-middleware
-  * http://hubcarl.github.io/blog/2017/04/15/egg-webpack/
+---
 
-  webpack-bundle-analyzer
-  * https://zhuanlan.zhihu.com/p/26710831
+## Build
+A `build` script to bundle JS, CSS, and images for production, with sourcemaps.
+
+```
+$ npm run build
+```
+
+---
+
+## Scripts
+
+|`npm <script>`     |Description|
+|-------------------|-----------|
+|`star:dev`         |Serves your app at `localhost:3000`|
+|`star:prod`        |Serves your app at `localhost:3000`|
+|`build`            |Builds the application|
+|`lint`             |[Lints](http://stackoverflow.com/questions/8503559/what-is-linting) the project for potential errors|
+
+---
+
+## TODO
+
+- [ ] Repeat compile error
