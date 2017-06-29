@@ -1,12 +1,18 @@
 {
   "extends": "eslint-config-egg",
   "parserOptions": {
-    "ecmaVersion": 6,
+    "ecmaVersion": 8,
     "sourceType": "module"
   },
   "rules": {
     "no-unused-vars": 2,
     "no-console": 1,
-    "object-shorthand": 1
+    "object-shorthand": 0,
+    "arrow-parens": 0,
+  },
+  "globals": {
+    "window": true,
+    "$": true,
+    "_": true
   }
 }

@@ -1,4 +1,3 @@
-const path = require('path');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -8,10 +7,6 @@ const OpenBrowserPlugin = require('open-browser-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const project = require('./project.config');
 
-const ROOT_PATH = path.resolve(__dirname, '..');
-const OUTPUT_PATH = path.join(ROOT_PATH, 'src/public');
-const IMAGES_PATH = path.join(ROOT_PATH, 'src/assets/images');
-
 const __DEV__ = project.globals.__DEV__;
 const __PROD__ = project.globals.__PROD__;
 // const __TEST__ = project.globals.__TEST__;
@@ -19,11 +14,9 @@ const __PROD__ = project.globals.__PROD__;
 console.log('process.env.NODE_ENV =', process.env.NODE_ENV);
 
 const webpackConfig = {
-  // name: 'server',
-  // target: 'node',
-  context: path.join(ROOT_PATH, 'src/assets/javascripts'),
+  context: project.paths.src('assets/javascripts'),
+
   resolve: {
-    // modules: [ project.paths.src(), 'node_modules' ],
     extensions: [ '.js', '.json' ],
   },
 
@@ -42,28 +35,20 @@ webpackConfig.entry = {
 // ------------------------------------
 // Bundle Output
 // ------------------------------------
-// webpackConfig.output = {
-//   filename: `[name].[${project.compiler_hash_type}].js`,
-//   path: OUTPUT_PATH,
-//   // path: project.paths.public(),
-//   publicPath: project[project.env].compiler_public_path,
-// };
 webpackConfig.output = {
-  path: OUTPUT_PATH,
-  publicPath: './',
-  filename: '[name].[hash].js',
+  path: project.paths.src('public/'),
+  publicPath: project[project.env].compiler_public_path,
+  filename: `[name].[${project.compiler_hash_type}].js`,
 };
-
-// ------------------------------------
-// Externals
-// ------------------------------------
-// webpackConfig.externals = [];
 
 // ------------------------------------
 // Plugins List
 // ------------------------------------
 const copyImages = new CopyWebpackPlugin([
-  { from: IMAGES_PATH, to: `${OUTPUT_PATH}/images` },
+  {
+    from: project.paths.src('assets/images'),
+    to: project.paths.src('public/images'),
+  },
 ]);
 
 const extractSass = new ExtractTextPlugin({
@@ -80,8 +65,8 @@ const exposeGlobal = new webpack.ProvidePlugin({
 
 const generateHtml = new HtmlWebpackPlugin({
   inject: 'head',
-  template: path.join(ROOT_PATH, 'src/view/layout/index_template.html'),
-  filename: path.join(ROOT_PATH, 'src/view/layout/index.html'),
+  template: project.paths.src('view/layout/index_template.html'),
+  filename: project.paths.src('view/layout/index.html'),
 });
 
 const occurrenceOrderPlugin = new webpack.optimize.OccurrenceOrderPlugin();
@@ -101,10 +86,10 @@ const commonsChunkPlugin = new webpack.optimize.CommonsChunkPlugin({
 
 const assetsWebpackPlugin = new AssetsWebpackPlugin({
   filename: 'assets.json',
-  path: path.join(ROOT_PATH, 'src', 'config'),
+  path: project.paths.src('config'),
   prettyPrint: true,
   processOutput: function(assets) {
-    return 'window.staticMap = ' + JSON.stringify(assets);
+    return 'window.assetMap = ' + JSON.stringify(assets);
   },
 });
 
