@@ -9,7 +9,7 @@ const appRoutes = app => {
   });
 
   router
-    .get('/home', home)
+    .get('/', home)
     .get('/about', about);
 
   app
