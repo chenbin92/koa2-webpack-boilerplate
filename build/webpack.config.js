@@ -38,7 +38,7 @@ webpackConfig.entry = {
 webpackConfig.output = {
   path: project.paths.src('public/'),
   publicPath: project[project.env].compiler_public_path,
-  filename: `[name].[${project.compiler_hash_type}].js`,
+  filename: __DEV__ ? '[name].bundle.js' : `[name].[${project.compiler_hash_type}].js`,
 };
 
 // ------------------------------------
