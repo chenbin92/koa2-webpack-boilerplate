@@ -39,6 +39,12 @@ $ cd MyApp
 $ npm install        # Install project dependencies listed in package.json
 ```
 
+If you just want to start a new project without the `koa2 boilerplate` commit history then you can do:
+
+```bash
+$ git clone --depth=1 http://gitlab.whup.com/UPOem-WebApplication/koa2-boilerplate.git MyApp
+```
+The depth=1 tells git to only pull down one commit worth of historical data.
 
 **Step 3**. Compile and launch your app by running:
 
