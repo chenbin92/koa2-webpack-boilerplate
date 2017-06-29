@@ -102,7 +102,6 @@ webpackConfig.plugins = [
   generateHtml,
   exposeGlobal,
   definePlugin,
-  commonsChunkPlugin,
   assetsWebpackPlugin,
 ];
 
@@ -129,6 +128,7 @@ if (__PROD__) {
   webpackConfig.plugins.push(
     uglifyJsPlugin,
     occurrenceOrderPlugin,
+    commonsChunkPlugin,
     new BundleAnalyzerPlugin()
   );
 
