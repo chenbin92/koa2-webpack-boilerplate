@@ -1,3 +1,4 @@
+/* eslint no-console: 0 */
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -6,12 +7,13 @@ const AssetsWebpackPlugin = require('assets-webpack-plugin');
 const OpenBrowserPlugin = require('open-browser-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const project = require('./project.config');
+const { chalkInfo } = require('./chalkConfig');
 
 const __DEV__ = project.globals.__DEV__;
 const __PROD__ = project.globals.__PROD__;
 // const __TEST__ = project.globals.__TEST__;
 
-console.log('process.env.NODE_ENV =', process.env.NODE_ENV);
+console.log(chalkInfo(`============= [process.env.NODE_ENV = ${process.env.NODE_ENV}] =============`));
 
 const webpackConfig = {
   context: project.paths.src('assets/javascripts'),
@@ -110,7 +112,7 @@ webpackConfig.plugins = [
 // ------------------------------------
 if (__DEV__) {
   webpackConfig.devtool = project.development.compiler_devtool;
-  console.log('Enabling plugins for live development (HMR, NoErrors).');
+  console.log(chalkInfo('============= [Enabling plugins for live development (HMR, NoErrors)] ============= '));
   webpackConfig.plugins.push(
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
@@ -124,7 +126,7 @@ if (__DEV__) {
 // ------------------------------------
 if (__PROD__) {
   webpackConfig.devtool = project.production.compiler_devtool;
-  console.log('Enabling plugins for production (OccurenceOrder, UglifyJS).');
+  console.log(chalkInfo('============= [Enabling plugins for production (OccurenceOrder, UglifyJS)] ============='));
   webpackConfig.plugins.push(
     uglifyJsPlugin,
     occurrenceOrderPlugin,

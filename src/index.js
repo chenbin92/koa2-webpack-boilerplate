@@ -6,6 +6,7 @@ import webpack from 'webpack';
 import { devMiddleware, hotMiddleware } from 'koa-webpack-middleware';
 import webpackConfig from '../build/webpack.config';
 import router from './router';
+import { chalkInfo } from '../build/chalkConfig';
 
 const compiler = webpack(webpackConfig);
 
@@ -35,5 +36,5 @@ app.use(devMiddleware(compiler, {
 }));
 app.use(hotMiddleware(compiler));
 app.listen(port, ip, () => {
-  console.log(`app started at http://${ip ? ip : 'localhost'}:${port}`);
+  console.log(chalkInfo(`============= [app started at http://${ip ? ip : 'localhost'}:${port}]============= `));
 });
