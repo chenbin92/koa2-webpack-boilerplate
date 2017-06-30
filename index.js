@@ -1,4 +1,4 @@
 require('babel-register')({
-  ignore: /node_modules\/(?!koa-*)(?!koa2-boilerplate)/,
+  ignore: /node_modules\/(?!koa-*)/,
 });
 require('./src/index.js');
