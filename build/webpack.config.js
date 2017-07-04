@@ -28,10 +28,12 @@ const webpackConfig = {
 // ------------------------------------
 // Entry Points
 // ------------------------------------
+const APP_ENTRY = './application.js';
+
 webpackConfig.entry = {
-  vendor: './vendor.js',
-  common: './commons/index.js',
-  application: [ './application.js', 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=2000&reload=true' ],
+  vendors: './vendors.js',
+  common: './common/index.js',
+  application: __DEV__ ? [ APP_ENTRY ].concat('webpack-hot-middleware/client?path=/__webpack_hmr&timeout=2000&reload=true') : [ APP_ENTRY ],
 };
 
 // ------------------------------------
@@ -83,7 +85,7 @@ const uglifyJsPlugin = new webpack.optimize.UglifyJsPlugin({
 const definePlugin = new webpack.DefinePlugin(project.globals);
 
 const commonsChunkPlugin = new webpack.optimize.CommonsChunkPlugin({
-  name: [ 'common', 'vendor', 'runtime' ],
+  name: 'runtime',
 });
 
 const assetsWebpackPlugin = new AssetsWebpackPlugin({
@@ -129,6 +131,7 @@ if (__PROD__) {
   webpackConfig.plugins.push(
     uglifyJsPlugin,
     occurrenceOrderPlugin,
+    // TODO: separation vendors.js && common.js
     commonsChunkPlugin
     // TODO: shouldn't be here
     // new BundleAnalyzerPlugin()
