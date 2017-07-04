@@ -11,7 +11,7 @@
     "watch:assets": "webpack --watch --colors --display-error-details --config build/webpack.config.js",
     "lint": "esw .",
     "lint:watch": "npm run lint -- --watch",
-    "clean": "rimraf src/public/*"
+    "clean": "rimraf src/public/* src/view/layout/index.html"
   },
   "betterScripts": {
     "start:dev": {

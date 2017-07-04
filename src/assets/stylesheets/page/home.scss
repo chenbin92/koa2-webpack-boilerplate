@@ -1,9 +1,9 @@
-.home, .about {
-  text-align: center;
+.home-page {
 
   h2 {
-    color: red;
+    color: $red;
     font-size: 48px;
+    margin-bottom: 30px;
   }
 
   .logo {

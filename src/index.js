@@ -29,7 +29,7 @@ app.use(devMiddleware(compiler, {
     poll: true,
   },
   reload: true,
-  publicPath: './', // config.output.publicPath
+  publicPath: webpackConfig.output.publicPath, // config.output.publicPath
   stats: {
     colors: true,
   },
