@@ -5,7 +5,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const AssetsWebpackPlugin = require('assets-webpack-plugin');
 const OpenBrowserPlugin = require('open-browser-webpack-plugin');
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+// const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const project = require('./project.config');
 const { chalkInfo } = require('./chalkConfig');
 
@@ -114,7 +114,6 @@ if (__DEV__) {
   webpackConfig.devtool = project.development.compiler_devtool;
   console.log(chalkInfo('============= [Enabling plugins for live development (HMR, NoErrors)] ============= '));
   webpackConfig.plugins.push(
-    new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
     new OpenBrowserPlugin({ url: project.development.compiler_public_path })
@@ -126,12 +125,13 @@ if (__DEV__) {
 // ------------------------------------
 if (__PROD__) {
   webpackConfig.devtool = project.production.compiler_devtool;
-  console.log(chalkInfo('============= [Enabling plugins for production (OccurenceOrder, UglifyJS)] ============='));
+  console.log(chalkInfo('============= [Enabling plugins for production (OccurenceOrder, UglifyJS, commonsChunk)] ============='));
   webpackConfig.plugins.push(
     uglifyJsPlugin,
     occurrenceOrderPlugin,
     commonsChunkPlugin,
-    new BundleAnalyzerPlugin()
+    // TODO: shouldn't be here
+    // new BundleAnalyzerPlugin()
   );
 
   // https://webpack.js.org/configuration/performance

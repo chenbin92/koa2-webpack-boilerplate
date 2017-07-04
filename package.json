@@ -41,7 +41,9 @@
   "dependencies": {
     "jquery": "^3.2.1",
     "koa": "^2.3.0",
+    "koa-ejs": "^4.1.0",
     "koa-router": "^7.2.1",
+    "koa-static": "^4.0.0",
     "lodash": "^4.17.4"
   },
   "devDependencies": {
@@ -60,8 +62,6 @@
     "extract-text-webpack-plugin": "^2.1.2",
     "html-loader": "^0.4.5",
     "html-webpack-plugin": "^2.28.0",
-    "koa-ejs": "^4.0.0",
-    "koa-static": "^3.0.0",
     "koa-webpack-middleware": "^1.0.5",
     "node-sass": "^4.5.3",
     "npm-run-all": "^4.0.2",
