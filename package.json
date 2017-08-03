@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "go": "nodemon index.js --watch config/webpack.config.js",
+    "go": "nodemon index.js --watch build/webpack.config.js",
     "start:dev": "better-npm-run start:dev",
     "start:prod": "better-npm-run start:prod",
     "build": "better-npm-run build",
@@ -15,7 +15,7 @@
   },
   "betterScripts": {
     "start:dev": {
-      "command": "npm-run-all --parallel lint:watch  go",
+      "command": "npm-run-all --parallel clean go",
       "env": {
         "NODE_ENV": "development"
       }
@@ -74,6 +74,7 @@
     "style-loader": "^0.18.2",
     "url-loader": "^0.5.9",
     "webpack": "^3.0.0",
-    "webpack-bundle-analyzer": "^2.8.2"
+    "webpack-bundle-analyzer": "^2.8.2",
+    "webpack-dev-middleware": "^1.12.0"
   }
 }

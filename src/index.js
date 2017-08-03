@@ -3,23 +3,18 @@ import Koa from 'koa';
 import path from 'path';
 import render from 'koa-ejs';
 import serve from 'koa-static';
-// import webpack from 'webpack';
+import webpack from 'webpack';
 // import { devMiddleware } from 'koa-webpack-middleware';
+import devMiddleware from './middleware/devMiddleware';
 import assetsMiddleware from './middleware/assetsMiddleware';
-// import webpackConfig from '../build/webpack.config';
+import webpackConfig from '../build/webpack.config';
 import router from './router';
 import { chalkInfo } from '../build/chalkConfig';
 
-// const compiler = webpack(webpackConfig);
-
+const compiler = webpack(webpackConfig);
 const port = process.env.HTTP_PORT || 3000;
 const ip = process.env.HTTP_IP || undefined;
 const app = new Koa();
-
-app.use(serve(path.resolve(__dirname, './public')));
-app.use(assetsMiddleware({
-  manifestPath: path.join(__dirname, '/public', 'assets_map.json'),
-}));
 
 render(app, {
   root: path.join(__dirname, 'view'),
@@ -28,12 +23,18 @@ render(app, {
   cache: false,
 });
 
-app.use(router().routes()).use(router().allowedMethods());
+app.use(serve(path.resolve(__dirname, './public')));
 
-// app.use(devMiddleware(compiler, {
-//   publicPath: webpackConfig.output.publicPath,
-//   stats: { colors: true },
-// }));
+app.use(devMiddleware(compiler, {
+  publicPath: webpackConfig.output.publicPath,
+  stats: { colors: true },
+}));
+
+app.use(assetsMiddleware({
+  manifestPath: path.join(__dirname, '/public', 'assets_map.json'),
+}));
+
+app.use(router().routes()).use(router().allowedMethods());
 
 // app.use(hotMiddleware(compiler));
 
