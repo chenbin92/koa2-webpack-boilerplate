@@ -21,7 +21,7 @@
       }
     },
     "start:prod": {
-      "command": "npm-run-all build go",
+      "command": "npm run build && node index.js",
       "env": {
         "NODE_ENV": "production"
       }

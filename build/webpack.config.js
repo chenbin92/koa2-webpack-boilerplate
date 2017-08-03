@@ -40,8 +40,8 @@ webpackConfig.entry = {
 // Bundle Output
 // ------------------------------------
 webpackConfig.output = {
-  path: project.paths.src('public/'),
-  publicPath: project[project.env].compiler_public_path,
+  path: project.paths.src('public'),
+  publicPath: __PROD__ ? project.production.compiler_public_path : '/',
   filename: __DEV__ ? '[name].js' : `[name].[${project.compiler_hash_type}].js`,
 };
 
@@ -99,7 +99,6 @@ webpackConfig.plugins = [
   extractSass,
   exposeGlobal,
   definePlugin,
-  assetsWebpackPlugin,
 ];
 
 // ------------------------------------
@@ -124,6 +123,7 @@ if (__PROD__) {
   webpackConfig.plugins.push(
     uglifyJsPlugin,
     occurrenceOrderPlugin,
+    assetsWebpackPlugin,
     // TODO: separation vendors.js && common.js
     commonsChunkPlugin
     // TODO: shouldn't be here

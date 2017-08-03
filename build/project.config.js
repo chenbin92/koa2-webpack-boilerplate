@@ -24,7 +24,7 @@ const config = {
   // Server Configuration
   // ----------------------------------
   server_host: 'localhost',
-  server_ip: process.env.HTTP_IP || undefined,
+  server_ip: process.env.HTTP_IP || '127.0.0.1',
   server_port: process.env.HTTP_PORT || 3000,
 };
 
@@ -53,7 +53,7 @@ config.development = {
 // The Prodution Compiler Configuration
 // ----------------------------------
 config.production = {
-  compiler_public_path: './',
+  compiler_public_path: '/',
   compiler_fail_on_warning: false,
   compiler_devtool: 'source-map',
   compiler_stats: {
