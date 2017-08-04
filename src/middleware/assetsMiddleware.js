@@ -1,38 +1,37 @@
 const fs = require('fs');
-const IS_PRODUCTION = process.env.NODE_ENV === 'production';
-const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
+const assert = require('assert');
 
-const defaults = {
-  manifestPath: null,
-  outPath: 'static',
-  env: 'development',
-  cdn: null,
-};
+module.exports = (options = {}) => {
 
-module.exports = options => {
-
-  const _options = Object.assign({}, defaults, options);
+  options.outPath = options.outPath || '';
+  options.env = options.env || 'development';
 
   const assetsMiddleware = async (ctx, next) => {
 
     const getUrlByEnv = assetName => {
+      assert(typeof assetName === 'string', 'assetName required, and must be a string');
+      assert(assetName.split.length > 1, 'assetName should be similar to application.css or application.js');
+
+      const name = assetName.split('.')[0];
+      const suffix = assetName.split('.')[1];
+
       let url = '';
-      if (IS_DEVELOPMENT) {
-        url = `/${assetName}.js`;
+
+      if (options.env === 'development') {
+        url = `${options.outPath}/${name}.${suffix}`;
         return url;
       }
 
-      if (IS_PRODUCTION) {
+      if (options.env === 'production') {
         let manifest = {};
 
         try {
-          const content = fs.readFileSync(_options.manifestPath, 'utf8');
+          const content = fs.readFileSync(options.manifestPath, 'utf8');
           manifest = JSON.parse(content);
         } catch (e) {
-          throw new Error(`can't manifest file from ${_options.manifestPath}`);
+          throw new Error(`can't manifest file from ${options.manifestPath}`);
         }
-
-        url = manifest[assetName].js;
+        url = manifest[name][suffix];
         return url;
       }
 

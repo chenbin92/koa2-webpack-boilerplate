@@ -56,8 +56,8 @@ const copyImages = new CopyWebpackPlugin([
 ]);
 
 const extractSass = new ExtractTextPlugin({
-  filename: 'application.css', // '[name].[contenthash].css'
-  disable: __DEV__,
+  filename: __DEV__ ? 'application.css' : `[name].[${project.compiler_hash_type}].css`,
+  // disable: __DEV__,
 });
 
 // fix legacy jQuery plugins which depend on globals
@@ -99,6 +99,8 @@ webpackConfig.plugins = [
   extractSass,
   exposeGlobal,
   definePlugin,
+  // TODO: separation vendors.js && common.js
+  commonsChunkPlugin,
 ];
 
 // ------------------------------------
@@ -123,9 +125,7 @@ if (__PROD__) {
   webpackConfig.plugins.push(
     uglifyJsPlugin,
     occurrenceOrderPlugin,
-    assetsWebpackPlugin,
-    // TODO: separation vendors.js && common.js
-    commonsChunkPlugin
+    assetsWebpackPlugin
     // TODO: shouldn't be here
     // new BundleAnalyzerPlugin()
   );

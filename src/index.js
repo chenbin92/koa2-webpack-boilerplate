@@ -7,8 +7,11 @@ import assetsMiddleware from './middleware/assetsMiddleware';
 import router from './router';
 import { chalkInfo } from '../build/chalkConfig';
 
-const port = process.env.HTTP_PORT || 3000;
-const ip = process.env.HTTP_IP || undefined;
+const PORT = process.env.HTTP_PORT || 3000;
+const IP = process.env.HTTP_IP || undefined;
+const IS_DEV = process.env.NODE_ENV === 'development';
+const IS_PROD = process.env.NODE_ENV === 'production';
+
 const app = new Koa();
 
 render(app, {
@@ -18,7 +21,7 @@ render(app, {
   cache: false,
 });
 
-if (process.env.NODE_ENV === 'development') {
+if (IS_DEV) {
   const webpack = require('webpack');
   const devMiddleware = require('./middleware/devMiddleware');
   const webpackConfig = require('../build/webpack.config');
@@ -29,19 +32,17 @@ if (process.env.NODE_ENV === 'development') {
   }));
 }
 
-if (process.env.NODE_ENV === 'production') {
-  console.log(`============= current env is ${process.env.NODE_ENV} =========================`);
+if (IS_PROD) {
   app.use(serve(path.resolve(__dirname, './public/')));
 }
 
 app.use(assetsMiddleware({
+  env: process.env.NODE_ENV,
   manifestPath: path.join(__dirname, 'public', 'assets_map.json'),
 }));
 
 app.use(router().routes()).use(router().allowedMethods());
 
-// app.use(hotMiddleware(compiler));
-
-app.listen(port, ip, () => {
-  console.log(chalkInfo(`============= [app started at http://${ip ? ip : 'localhost'}:${port}]============= `));
+app.listen(PORT, IP, () => {
+  console.log(chalkInfo(`============= [app started at http://${IP ? IP : 'localhost'}:${PORT}]============= `));
 });
