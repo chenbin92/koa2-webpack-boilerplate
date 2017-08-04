@@ -34,7 +34,7 @@ This is a koa2 starter boilerplate app I've put together using the following tec
 **Step 2**. Clone this repository
 
 ```shell
-$ git clone http://gitlab.whup.com/UPOem-WebApplication/koa2-boilerplate.git MyApp
+$ git clone git@github.com:chenbin92/koa2-webpack-boilerplate.git MyApp
 $ cd MyApp
 $ npm install        # Install project dependencies listed in package.json
 ```
@@ -42,7 +42,7 @@ $ npm install        # Install project dependencies listed in package.json
 If you just want to start a new project without the `koa2 boilerplate` commit history then you can do:
 
 ```bash
-$ git clone --depth=1 http://gitlab.whup.com/UPOem-WebApplication/koa2-boilerplate.git MyApp
+$ git clone --depth=1 git@github.com:chenbin92/koa2-webpack-boilerplate.git MyApp
 ```
 The depth=1 tells git to only pull down one commit worth of historical data.
 
@@ -76,4 +76,4 @@ $ npm run build
 
 ## Wiki
 
-- [koa2-boilerplate](http://gitlab.whup.com/UPOem-WebApplication/koa2-boilerplate/wikis/home#koa-boilerplate)
+- [koa2-webpack-boilerplate](https://github.com/chenbin92/blog/issues/4)
