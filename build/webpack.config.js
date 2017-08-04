@@ -2,9 +2,8 @@
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const AssetsWebpackPlugin = require('assets-webpack-plugin');
-const OpenBrowserPlugin = require('open-browser-webpack-plugin');
+// const OpenBrowserPlugin = require('open-browser-webpack-plugin');
 // const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const project = require('./project.config');
 const { chalkInfo } = require('./chalkConfig');
@@ -33,16 +32,17 @@ const APP_ENTRY = './application.js';
 webpackConfig.entry = {
   vendors: './vendors.js',
   common: './common/index.js',
-  application: __DEV__ ? [ APP_ENTRY ].concat('webpack-hot-middleware/client?path=/__webpack_hmr&timeout=2000&reload=true') : [ APP_ENTRY ],
+  application: APP_ENTRY,
+  // application: __DEV__ ? [ APP_ENTRY ].concat('webpack-hot-middleware/client?path=/__webpack_hmr&timeout=2000&reload=true') : [ APP_ENTRY ],
 };
 
 // ------------------------------------
 // Bundle Output
 // ------------------------------------
 webpackConfig.output = {
-  path: project.paths.src('public/'),
-  publicPath: project[project.env].compiler_public_path,
-  filename: __DEV__ ? '[name].bundle.js' : `[name].[${project.compiler_hash_type}].js`,
+  path: project.paths.src('public'),
+  publicPath: __PROD__ ? project.production.compiler_public_path : '/',
+  filename: __DEV__ ? '[name].js' : `[name].[${project.compiler_hash_type}].js`,
 };
 
 // ------------------------------------
@@ -56,8 +56,8 @@ const copyImages = new CopyWebpackPlugin([
 ]);
 
 const extractSass = new ExtractTextPlugin({
-  filename: 'application.css', // '[name].[contenthash].css'
-  disable: __DEV__,
+  filename: __DEV__ ? 'application.css' : `[name].[${project.compiler_hash_type}].css`,
+  // disable: __DEV__,
 });
 
 // fix legacy jQuery plugins which depend on globals
@@ -65,12 +65,6 @@ const exposeGlobal = new webpack.ProvidePlugin({
   $: 'jquery',
   jQuery: 'jquery',
   _: 'lodash',
-});
-
-const generateHtml = new HtmlWebpackPlugin({
-  inject: 'head',
-  template: project.paths.src('view/layout/index_template.html'),
-  filename: project.paths.src('view/layout/index.html'),
 });
 
 const occurrenceOrderPlugin = new webpack.optimize.OccurrenceOrderPlugin();
@@ -90,11 +84,11 @@ const commonsChunkPlugin = new webpack.optimize.CommonsChunkPlugin({
 
 const assetsWebpackPlugin = new AssetsWebpackPlugin({
   filename: 'assets_map.json',
-  path: project.paths.src('config'),
+  path: project.paths.src('public'),
   prettyPrint: true,
-  processOutput: function(assets) {
-    return 'window.assetMap = ' + JSON.stringify(assets);
-  },
+  // processOutput: function(assets) {
+  // return 'window.assetMap = ' + JSON.stringify(assets);
+  // },
 });
 
 // ------------------------------------
@@ -103,10 +97,10 @@ const assetsWebpackPlugin = new AssetsWebpackPlugin({
 webpackConfig.plugins = [
   copyImages,
   extractSass,
-  generateHtml,
   exposeGlobal,
   definePlugin,
-  assetsWebpackPlugin,
+  // TODO: separation vendors.js && common.js
+  commonsChunkPlugin,
 ];
 
 // ------------------------------------
@@ -117,8 +111,8 @@ if (__DEV__) {
   console.log(chalkInfo('============= [Enabling plugins for live development (HMR, NoErrors)] ============= '));
   webpackConfig.plugins.push(
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin(),
-    new OpenBrowserPlugin({ url: project.development.compiler_public_path })
+    new webpack.NoEmitOnErrorsPlugin()
+    // new OpenBrowserPlugin({ url: project.development.compiler_public_path })
   );
 }
 
@@ -131,8 +125,7 @@ if (__PROD__) {
   webpackConfig.plugins.push(
     uglifyJsPlugin,
     occurrenceOrderPlugin,
-    // TODO: separation vendors.js && common.js
-    commonsChunkPlugin
+    assetsWebpackPlugin
     // TODO: shouldn't be here
     // new BundleAnalyzerPlugin()
   );
