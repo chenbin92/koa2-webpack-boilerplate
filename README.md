@@ -1,4 +1,4 @@
-# koa2 Boilerplate
+# koa2 webpack boilerplate
 
 A simple koa2 boilerplate based on webpack3
 
@@ -39,7 +39,7 @@ $ cd MyApp
 $ npm install        # Install project dependencies listed in package.json
 ```
 
-If you just want to start a new project without the `koa2 boilerplate` commit history then you can do:
+If you just want to start a new project without the `koa2 webpack boilerplate` commit history then you can do:
 
 ```bash
 $ git clone --depth=1 git@github.com:chenbin92/koa2-webpack-boilerplate.git MyApp
