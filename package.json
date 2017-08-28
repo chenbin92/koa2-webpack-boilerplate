@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "go": "nodemon index.js --watch build/webpack.config.js",
+    "go": "nodemon index.js",
     "start:dev": "better-npm-run start:dev",
     "start:prod": "better-npm-run start:prod",
     "build": "better-npm-run build",
@@ -15,7 +15,7 @@
   },
   "betterScripts": {
     "start:dev": {
-      "command": "npm-run-all --parallel clean go",
+      "command": "npm-run-all --parallel clean build go",
       "env": {
         "NODE_ENV": "development"
       }
